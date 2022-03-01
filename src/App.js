@@ -14,8 +14,14 @@ function App() {
     <Layout>
       <Switch>
         <Route path='/' exact>
-          <HomePage />
+          {/* <HomePage /> */}
+          <AuthPage />
         </Route>
+
+        {authCtx.isLoggedIn && (<Route path='/HomePage' exact>
+          <HomePage />
+        </Route>)}
+
         {!authCtx.isLoggedIn && (
           <Route path='/auth'>
             <AuthPage />

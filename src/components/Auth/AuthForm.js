@@ -66,7 +66,7 @@ const AuthForm = () => {
           new Date().getTime() + +data.expiresIn * 1000
         );
         authCtx.login(data.idToken, expirationTime.toISOString());
-        history.replace('/');
+        history.replace('/HomePage');
       })
       .catch((err) => {
         alert(err.message);
