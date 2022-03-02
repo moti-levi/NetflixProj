@@ -3,6 +3,7 @@ import { useRef, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../../Store/auth-context';
 import Select from 'react-select'
+import StartPageForm from './StartPageForm';
 
 const StartingPageContent = (props) => {
 
@@ -42,13 +43,18 @@ const StartingPageContent = (props) => {
 
 
   return (
+  //   <section className={classes.profile}>
+  //   <h1>Hello, Please choose between C, S, E and H </h1>
+  //   
+  //   <div className={classes.action}>
+  //       <button>Select</button>
+  //     </div>
+  // </section>
+
     <section className={classes.profile}>
-    <h1>Hello, Please choose between C, S, E and H </h1>
-    <Select options={options} className={classes.profile}/>
-    <div className={classes.action}>
-        <button>Select</button>
-      </div>
-  </section>
+      <h1>Hello, Please choose between C, S, E and H</h1>
+      <StartPageForm />
+    </section>
   );
 };
 
