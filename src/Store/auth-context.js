@@ -4,6 +4,8 @@ let logoutTimer;
 
 const AuthContext = React.createContext({
   token: '',
+  userid:'',
+  backappUrl:'',
   isLoggedIn: false,
   login: (token) => {},
   logout: () => {},
@@ -44,7 +46,10 @@ export const AuthContextProvider = (props) => {
     initialToken = tokenData.token;
   }
 
+  const BackAppUrl="http://localhost:65249/bing";
+
   const [token, setToken] = useState(initialToken);
+  const [userid, setUserid] = useState('');
 
   const userIsLoggedIn = !!token;
 
@@ -58,8 +63,10 @@ export const AuthContextProvider = (props) => {
     }
   }, []);
 
-  const loginHandler = (token, expirationTime) => {
+  const loginHandler = (token,userid, expirationTime) => {
+    console.log('userid:'+ userid);
     setToken(token);
+    setUserid(userid);
     localStorage.setItem('token', token);
     localStorage.setItem('expirationTime', expirationTime);
 
@@ -70,16 +77,19 @@ export const AuthContextProvider = (props) => {
 
   useEffect(() => {
     if (tokenData) {
-      console.log(tokenData.duration);
+      // console.log(tokenData.duration);
       logoutTimer = setTimeout(logoutHandler, tokenData.duration);
     }
   }, [tokenData, logoutHandler]);
 
   const contextValue = {
     token: token,
-    isLoggedIn: userIsLoggedIn,
+    isLoggedIn: userIsLoggedIn, 
+    backappUrl:BackAppUrl,
+    userId:userid,
     login: loginHandler,
     logout: logoutHandler,
+   
   };
 
   return (

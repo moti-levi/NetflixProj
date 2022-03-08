@@ -1,10 +1,10 @@
-import { useState,useRef,useContext  } from 'react';
+import { useState, useRef, useContext } from 'react';
 import AuthContext from '../../Store/auth-context';
 import { useHistory } from 'react-router-dom';
 import classes from './AuthForm.module.css';
 
 
-const ApiKey='AIzaSyBQtGN3OfIfxM5KViWN-wt04X0x04EM2jY'
+const ApiKey = 'AIzaSyBQtGN3OfIfxM5KViWN-wt04X0x04EM2jY'
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -17,23 +17,23 @@ const AuthForm = () => {
     setIsLogin((prevState) => !prevState);
   };
 
-  const submitHandler =(event) =>{
+  const submitHandler = (event) => {
 
     event.preventDefault();
-    const enteredEmail=emailInputRef.current.value;
-    const enteredPassword=passwordInputRef.current.value;
-    
+    const enteredEmail = emailInputRef.current.value;
+    const enteredPassword = passwordInputRef.current.value;
 
 
-    setIsLoading(true);   
+
+    setIsLoading(true);
 
     let url;
     if (isLogin) {
       url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+ApiKey;
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + ApiKey;
     } else {
       url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+ApiKey;
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + ApiKey;
     }
     fetch(url, {
       method: 'POST',
@@ -65,7 +65,8 @@ const AuthForm = () => {
         const expirationTime = new Date(
           new Date().getTime() + +data.expiresIn * 1000
         );
-        authCtx.login(data.idToken, expirationTime.toISOString());
+        console.log(data.localId);
+        authCtx.login(data.idToken,data.localId, expirationTime.toISOString());
         history.replace('/HomePage');
       })
       .catch((err) => {
@@ -78,15 +79,15 @@ const AuthForm = () => {
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
-          <label htmlFor='email'>Your Email</label>
-          <input type='email' id='email' required ref={emailInputRef}/>
+          <label htmlFor='email'>Email</label>
+          <input type='email' id='email' required ref={emailInputRef} />
         </div>
         <div className={classes.control}>
-          <label htmlFor='password'>Your Password</label>
-          <input type='password' id='password' required ref={passwordInputRef}/>
+          <label htmlFor='password'>Password</label>
+          <input type='password' id='password' required ref={passwordInputRef} />
         </div>
         <div className={classes.actions}>
-        {!isLoading && <button>{isLogin ? 'Login' : 'Create Account'}</button>}
+          {!isLoading && <button>{isLogin ? 'Login' : 'Create Account'}</button>}
           {isLoading && <p>Sending request...</p>}
           <button
             type='button'

@@ -1,20 +1,25 @@
-import { useRef, useContext,useState, Fragment } from 'react';
+import { useRef, useContext,useState, Fragment,useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../../Store/auth-context';
 import classes from './StartPageForm.module.css';
 import Select from 'react-select'
 import ContentSelection from './UIcontent/ContentSelection'
-
+import MsgBox from './UIcontent/MessageBox'
+import Spinner from './UIcontent/spinner';
 
 const StartPageForm = () => {
 
-  // const [isSelectOpt, setIsLogin] = useState(false);
-  const [iscontentShow, setcontentIsShow] = useState(false);
-  const userSelectionRef = useRef();
+  
+  const [iscontentShow, setContentIsShow] = useState(false);
+  const [iscallingToApi, setiscallingToApi] = useState(false);
+  const [contentType,setContentType] = useState('');
+  const [isMsgBoxShow,setMessageBoxState] = useState('');
+  const [isMsgShow,setMessageShowState] = useState(false);
+  const [contentData,setContentData]=useState([]);
+  const [userSelectionIndex,setuserSelectionIndex]=useState(0);
   const authCtx = useContext(AuthContext);
-  const history = useHistory();
-
-
+  const history = useHistory();  
+  
   const options = [
     { value: 'C', label: 'Content' },
     { value: 'S', label: 'Switch User' },
@@ -23,56 +28,87 @@ const StartPageForm = () => {
   ];
 
   const selectOption=(event)=>{
-
-    console.log(event.value)
+    setuserSelectionIndex(event.value);    
     if (event.value === "C") {
-      setcontentIsShow(true); 
+      setContentIsShow(true); 
     }       
   }
 
-  const hideComtectSelectHandler = () => {
-    setcontentIsShow(false);
+  const hideContectSelectHandler = () => {
+    setContentIsShow(false);
   };
 
-  const submitHandler = (event) => {
+  const closeMessageBox = () => {
+    setMessageShowState(false);
+  };
+
+  
+  const getContectSelectCOntentKind = (event)=>{
+    console.log(event.value)
+    setContentIsShow(false); 
+    setContentType(event.value)     
+  }
+
+  async function submitHandler  (event)  {
     event.preventDefault();
 
-    const userSelection = userSelectionRef.current.value;
+    setiscallingToApi(true);
 
-    // add validation
-
-    // fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBQtGN3OfIfxM5KViWN-wt04X0x04EM2jY', {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     idToken: authCtx.token,
-    //     password: enteredNewPassword,
-    //     returnSecureToken: false
-    //   }),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // }).then(res => {
-    //   // assumption: Always succeeds!
-    //   history.replace('/');
-    // });
+    console.log( userSelectionIndex);
+    
+    if(!contentType)
+    {        
+        setMessageBoxState(true)
+    }
+    setiscallingToApi(true);
+    fetch(authCtx.backappUrl, {
+      method: 'Get',      
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => 
+      response.json())
+    .then(data => {
+      addContentToUser(data)
+      console.log(data);
+      setContentData(data)
+      setiscallingToApi(false);
+      setMessageShowState(true);
+    });
   };
+
+  async function addContentToUser(content) { 
+    let userid=authCtx.userId;    
+    const userContent={...content,userid};
+    console.log('userContent= ' + userContent);
+    const response = await fetch('https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent.json', {
+      method: 'POST',
+      body: JSON.stringify(userContent),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await response.json();
+    console.log(data);
+  }
 
 
   return (
     <Fragment>
     <form className={classes.form} onSubmit={submitHandler}>
       <div className={classes.control}>       
-        <Select
-          // styles={customStyles}
-          options={options}
-          ref={userSelectionRef}                    
+        <Select          
+          options={options}                            
           onChange={event => selectOption( event)}
         />
       </div>
       <div className={classes.action}>
         <button>Submit Selection</button>
       </div>  
-      {iscontentShow && <ContentSelection onClose={hideComtectSelectHandler}/>}
+      {iscontentShow && <ContentSelection onClose={hideContectSelectHandler} onSubmitOptionHandler={getContectSelectCOntentKind}/>}
+      {isMsgBoxShow && <MsgBox alertMessage='Please select content type' onClose={closeMessageBox}/> }
+      {isMsgShow && <h1>You Are Now watching :  {contentData.title}  </h1> }
+      {iscallingToApi && <Spinner/>}
     </form>
     
     </Fragment>

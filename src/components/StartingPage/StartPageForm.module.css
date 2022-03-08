@@ -33,13 +33,13 @@
   font: inherit;
   cursor: pointer;
   padding: 0.5rem 1.5rem;
-  border-radius: 4px;
-  background-color: #38015c;
-  color: white;
-  border: 1px solid #38015c;
+  border-radius: 4px;  
+  color: black;
+  background-color: #e60914;
+  border: 1px solid #b8180a;
 }
 
 .action button:hover {
-  background-color: #540d83;
-  border-color: #540d83;
+  background-color: #c7403b;
+  border-color: #060607;
 }
