@@ -17,7 +17,7 @@ const MainNavigation = () => {
 
   return (
     <header className={classes.header}>
-      <Link to='/'>
+      <Link to='/HomePage'>
         <div className={classes.logo}>NETFLIX Bing...</div>
       </Link>
       <nav>
