@@ -1,4 +1,4 @@
-import { useRef, useContext, useState, Fragment, useEffect, useCallback } from 'react';
+import {  useContext, useState, Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../../Store/auth-context';
 import classes from './StartPageForm.module.css';
@@ -42,8 +42,8 @@ const StartPageForm = () => {
       setiscallingToApi(true)
       // alert(authCtx.userId);
       let url = 'https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent.json?orderBy="userid"&equalTo="' + authCtx.userId + '"';
-      axios.get(url).
-        then(res => {
+      
+       axios.get(url).then(res => {
           console.log(res.data)
           let response = JSON.parse(res.request.response);
           const loadedHistory = [];
