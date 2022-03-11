@@ -4,6 +4,11 @@
   margin: 2rem auto;
 }
 
+.time {
+  font-size: 3rem;
+  padding: 2rem;
+}
+
 .control {
   margin-bottom: 0.5rem;
 }

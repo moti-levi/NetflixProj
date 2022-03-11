@@ -8,7 +8,9 @@ const MsgBox = (props) => {
         <h1><p>{props.alertMessage}</p></h1>                
         </div>
         <div className={classes.actions}>
-          <button  className={classes.button} onClick={props.onClose}> Close</button>                  
+          {!props.isYesNoMsgBox &&<button  className={classes.button} onClick={props.onClose}> Close</button>}
+          {props.isYesNoMsgBox && <button  className={classes.buttonYN} onClick={props.close}> Yes</button>}              
+          {props.isYesNoMsgBox && <button  className={classes.buttonYN} onClick={props.onClick}> No</button>}              
         </div>      
     </Modal>
   );
