@@ -9,16 +9,16 @@ const History = (props) => {
     historyList = (
       <ul>
         {props.items.map((task) => (
-          <HistoryItem key={task.id}>title : {task.title} imdb_rating:{task.imdb_rating} </HistoryItem>
+          <HistoryItem key={task.id}>title : {task.title} ,
+                   imdb_rating:{task.imdb_rating} ,
+                   user Rank:{task.rankval}</HistoryItem>
         ))}
       </ul>
     );
   }
 
   let content = historyList;
-
   
-
   return (
     <Section>
       <div className={classes.container}>{content}</div>

@@ -11,7 +11,7 @@ const ContentSelection = (props) => {
   
   
   const options = [
-    { value: '1', label: ' TV Show' },
+    { value: '1', label: 'TV Show' },
     { value: '2', label: 'Movie' },
     { value: '3', label: 'Any' },
   ];

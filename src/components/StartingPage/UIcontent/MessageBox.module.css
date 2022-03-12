@@ -31,12 +31,12 @@
     padding: 0.5rem 1.5rem;
     border-radius: 4px;  
     color: black;
-    background-color: #86e609;
+    background-color: #e60914;
     border: 1px solid #b8180a;
   }
   
   .actions .buttonYN:hover {
-    background-color: #5c3bc7;
+    background-color: #c7403b;
     border-color: #060607;
   }
   

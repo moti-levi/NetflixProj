@@ -15,7 +15,7 @@ const StartPageForm = () => {
   const [iscontentShow, setContentIsShow] = useState(false);
   const [iscallingToApi, setiscallingToApi] = useState(false);
   const [contentType, setContentType] = useState('');
-  const [rankVal, setRankVal] = useState('');
+  // const [rankVal, setRankVal] = useState('');
   const [isMsgBoxShow, setMessageBoxState] = useState(false);
   const [isRankShow, setRankShow] = useState(false);
   const [istimerBoxShow, settimerBoxShow] = useState(false);
@@ -64,22 +64,26 @@ const StartPageForm = () => {
     // alert(event.value);
     setuserSelectionIndex(event.value);
     if (event.value === "C") {
+      if(contentData.content_type==='s')
+      {
+        updateAPI();
+      }
       setContentIsShow(true);
       setContentDataHistory([]);
     }
     else if (event.value === "H") {
       setiscallingToApi(true)
       // alert(authCtx.userId);
-      let url = 'https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent.json?orderBy="userid"&equalTo="' + authCtx.userId + '"';
+      let url = 'https://reactdb-f0ba3-default-rtdb.firebaseio.com/userRank.json?orderBy="userid"&equalTo="' + authCtx.userId + '"';
 
       axios.get(url).then(res => {
         console.log(res.data)
         let response = JSON.parse(res.request.response);
         const loadedHistory = [];
         for (var k in response) {
-          loadedHistory.push({ id: response[k].id, title: response[k].title, imdb_rating: response[k].imdb_rating });
+          loadedHistory.push({ id: response[k].id, title: response[k].title, imdb_rating: response[k].imdb_rating, rankval:response[k].rankval });
         }
-        console.log(loadedHistory);
+        // console.log(loadedHistory);
         setContentDataHistory(loadedHistory);
       }).catch
         (error => console.error(`Error : ${error}`));
@@ -112,80 +116,41 @@ const StartPageForm = () => {
   };
 
   const closeTimerMessageBox = () => {
-    console.log('closeMessageBox');
+    // console.log('closeMessageBox');
     setIsActive(false);
     settimerBoxShow(false);
+    setMessageShowState(false);
     setRankShow(true);
   };
 
   const closeRanking = () => {
-    console.log('closeRanking');
+    // console.log('closeRanking');
     setRankShow(false);
   };
 
-  const getContectSelectContentKind = (event) => {
-    console.log(event.value)
+  const getContectSelectContentKind = (event) => {    
+    // console.log(event.value)
     setContentIsShow(false);
     setContentType(event.value)
   }
 
   const getContectRanking = (event) => {
-    console.log(event.value)
+    console.log('getContectRanking');    
     setRankShow(false);
-    setRankVal(event.value)
-    updateAPI();
+    // setRankVal(event.value)
+    updateAPI(event.value);
 
   }
-  async function updateAPI() {
-    const note = 
-      {
-         rankVal
-      };
-    const response = await axios.put('https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent/' + authCtx.userid +'/name/0', note)
-    console.log(response)
-    console.log(response.data)
-  }
-
-  
-
-
-
-
-
-  async function submitHandler(event) {
-    event.preventDefault();
-
-    setiscallingToApi(true);
-
-    console.log(userSelectionIndex);
-
-    if (!contentType) {
-      SetMsgBoxAlertText("Please Select Content Type");
-      setMessageBoxState(true)
-    }
-    setiscallingToApi(true);
-    fetch(authCtx.backappUrl, {
-      method: 'Get',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(response =>
-      response.json())
-      .then(data => {
-        addContentToUser(data)
-        console.log(data);
-        setContentData(data)
-        setiscallingToApi(false);
-        setMessageShowState(true);
-        setIsActive(true);
-      });
-  };
-
-  async function addContentToUser(content) {
+  async function updateAPI(rankval=0) {
     let userid = authCtx.userId;
-    const userContent = { ...content, userid };
+    let title=contentData.title;
+    let imdb_rating=contentData.imdb_rating;
+    let overview=contentData.overview;
+    let contentID=contentData.id
+
+    const userContent = { contentID,title, imdb_rating ,rankval ,overview,userid};
     // console.log('userContent= ' + userContent);
-    const response = await fetch('https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent.json', {
+    const response = await fetch('https://reactdb-f0ba3-default-rtdb.firebaseio.com/userRank.json', {
       method: 'POST',
       body: JSON.stringify(userContent),
       headers: {
@@ -195,6 +160,67 @@ const StartPageForm = () => {
     const data = await response.json();
     console.log(data);
   }
+
+  
+
+
+  
+
+
+  async function submitHandler(event) {
+    event.preventDefault();
+
+    setiscallingToApi(true);
+
+    // console.log(userSelectionIndex);
+
+    if (!contentType) {
+      SetMsgBoxAlertText("Please Select Content Type");
+      setMessageBoxState(true)
+      return;
+    }
+
+
+    setiscallingToApi(true);
+    
+    let url=authCtx.backappUrl+"/"+authCtx.userId+"/"+contentType;
+
+    fetch(url, {
+      method: 'Get',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response =>
+      response.json())
+      .then(data => {
+        // addContentToUser(data)
+        console.log(data);
+        setContentData(data)
+        setiscallingToApi(false);
+        setMessageShowState(true);
+        if(data.content_type==="m"){
+          setIsActive(true);//start timer to user any time he watch movie only
+        }
+      })
+      .catch((e) => {
+        console.log(e)
+      });
+  };
+
+  // async function addContentToUser(content) {
+  //   let userid = authCtx.userId;
+  //   const userContent = { ...content, userid };
+  //   // console.log('userContent= ' + userContent);
+  //   const response = await fetch('https://reactdb-f0ba3-default-rtdb.firebaseio.com/userContent.json', {
+  //     method: 'POST',
+  //     body: JSON.stringify(userContent),
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     }
+  //   });
+  //   const data = await response.json();
+  //   console.log(data);
+  // }
 
 
 
